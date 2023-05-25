@@ -19,11 +19,55 @@ export async function getStaticProps() {
   }
 
 const index = ({ produits, categories }) => {
-
+    const [produitsAffiches, setProduits] = useState(
+        produits.map(produit => (
+            <Link className='card w-[275px] min-h-[400px] mb-20 flex flex-col justify-start items-center hover:shadow-sm' key={produit.id} href={'/produits/' + produit.id}>
+                <div className='h-[200px] w-full flex justify-center items-center'>
+                    <Image loader={() => produit.image} src={produit.image} alt={'produit: ' + produit.id} width='100' height='100'/>
+                </div>
+                <div className='flex flex-col justify-between h-[180px]'>
+                    <h3 className='w-full text-2xl text-start text-wrap line-clamp-2'>{produit.title}</h3>
+                    <div className='flex justify-between w-full'>
+                        <p className='text-left text-2xl font-thin'>{produit.price}$</p>
+                        <MdOutlineFavoriteBorder className='text-2xl'/>
+                    </div>
+                </div>
+            </Link>
+        ))
+    )
     const [show, setShow] = useState(false)
 
     const showCategories = () =>{
         setShow(!show)
+    }
+
+    const afficherProduits = () =>{
+        setProduits(
+                produits.map(produit => (
+                    <Link className='card w-[275px] min-h-[400px] mb-20 flex flex-col justify-start items-center hover:shadow-sm' key={produit.id} href={'/produits/' + produit.id}>
+                        <div className='h-[200px] w-full flex justify-center items-center'>
+                            <Image loader={() => produit.image} src={produit.image} alt={'produit: ' + produit.id} width='100' height='100'/>
+                        </div>
+                        <div className='flex flex-col justify-between h-[180px]'>
+                            <h3 className='w-full text-2xl text-start text-wrap line-clamp-2'>{produit.title}</h3>
+                            <div className='flex justify-between w-full'>
+                                <p className='text-left text-2xl font-thin'>{produit.price}$</p>
+                                <MdOutlineFavoriteBorder className='text-2xl'/>
+                            </div>
+                        </div>
+                    </Link>
+                ))
+        )
+    }
+
+    const filtrerCategorie = async (e) =>{
+        const categorie = e.target.value
+        const res = await fetch('https://fakestoreapi.com/products/category/' + categorie)
+        const data = await res.json()
+        
+        produits = data
+        afficherProduits()
+        console.log(produits)
     }
 
   return (
@@ -51,39 +95,17 @@ const index = ({ produits, categories }) => {
                                         {
                                             categories.map(categorie => (
                                                 <li>
-                                                    <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{categorie}</a>
+                                                    <button onClick={filtrerCategorie} value={categorie} class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{categorie}</button>
                                                 </li>
                                             ))
                                         }
-
-                                        <li>
-                                            <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Billing</a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Invoice</a>
-                                        </li>
                                     </ul>
                                 </li>
                             </ul>
                         </div>
                         </aside>
                     <div className='flex flex-wrap justify-between items-center w-[70%]'>
-                        {
-                            produits.map(produit => (
-                                <Link className='card w-[275px] min-h-[400px] mb-20 flex flex-col justify-start items-center hover:shadow-sm' key={produit.id} href={'/produits/' + produit.id}>
-                                    <div className='h-[200px] w-full flex justify-center items-center'>
-                                        <Image loader={() => produit.image} src={produit.image} alt={'produit: ' + produit.id} width='100' height='100'/>
-                                    </div>
-                                    <div className='flex flex-col justify-between h-[180px]'>
-                                        <h3 className='w-full text-2xl text-start text-wrap line-clamp-2'>{produit.title}</h3>
-                                        <div className='flex justify-between w-full'>
-                                            <p className='text-left text-2xl font-thin'>{produit.price}$</p>
-                                            <MdOutlineFavoriteBorder className='text-2xl'/>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))
-                        }
+                        {produitsAffiches}
                     </div>
                 </div>
 
